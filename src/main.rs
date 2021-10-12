@@ -1,5 +1,10 @@
 extern crate termion;
 
+use termion::event::Key;
+use termion::input::TermRead;
+use termion::raw::IntoRawMode;
+use std::io::{Write, stdout, stdin};
+
 static G_BORDER: &'static str = "*";
 static G_EMPTY: &'static str = " ";
 static G_APPLE: &'static str = "@";
@@ -33,6 +38,8 @@ fn main() {
     initMap(&mut map);
 
     drawMap(&map);
+
+    inputHandle();
 }
 
 fn initMap(map: &mut [[Object; 60]; 40]) {
@@ -76,3 +83,27 @@ fn drawMap(map: &[[Object; 60]; 40]) {
         print!("\n");
     }
 }
+
+fn inputHandle() {
+    let stdin = stdin();
+    let mut stdout = stdout().into_raw_mode().unwrap();
+
+    for c in stdin.keys() {
+
+        match c.unwrap() {
+            Key::Char('q') => break,
+            Key::Char(c) => println!("{}", c),
+            Key::Alt(c) => println!("^{}", c),
+            Key::Ctrl(c) => println!("*{}", c),
+            Key::Esc => println!("ESC"),
+            Key::Left => println!("←"),
+            Key::Right => println!("→"),
+            Key::Up => println!("↑"),
+            Key::Down => println!("↓"),
+            Key::Backspace => println!("×"),
+            _ => {}
+        }
+        stdout.flush().unwrap();
+    }
+}
+
